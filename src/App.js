@@ -16,6 +16,7 @@ const App = () => {
   const [isConnected, setIsConnected] = useState(false);
   const [message, setMessage] = useState('');
   const [disableCommit, setdisableCommit] = useState(false);
+  const [disableRegister, setdisableRegister] = useState(false);
   const [showRegister, setshowRegister] = useState(false);
   const [showCommit, setshowCommit] = useState(true);
 
@@ -76,8 +77,6 @@ const App = () => {
     const resolverContract = new ethers.Contract('0xBde345E46BD6E069c59A1Af6730854e54A9B60e6', PublicResolverABI, provider); 
     let owner = await resolverContract['addr(bytes32)'](node);
     if (owner !== ethers.constants.AddressZero) {
-      console.log("Domain already registered by:", owner);
-      setMessage("Domain already registered by: " + owner);
       return owner;
     } else {
       return ethers.constants.AddressZero;
@@ -108,16 +107,19 @@ const App = () => {
     await tx2.wait();
     console.log("Commit:", tx2);
     setMessage('Commitment Successful. Please wait 60 seconds for registration.');
-
+    
     setTimeout(() => {
       setshowRegister(true);
+      setdisableRegister(false);
       setshowCommit(false);
-      setMessage('');
+      setMessage('register now...');
     }, 62000);
 
 
   } catch (error) {
     console.error('Error:', error);
+    setMessage("error while committing. Please try again");
+    setshowRegister(false);
   }
   }
 
@@ -139,15 +141,18 @@ const App = () => {
     const resolver = new ethers.Contract('0xBde345E46BD6E069c59A1Af6730854e54A9B60e6', PublicResolverABI, signer);
     const price = await ethReg.rentPrice(search, 31536000);
     setTimeout(() => {
-    }, 2000);
+      console.log("Price:", price.toString());
+    }, 1000);
     const part = (price.toString()).split(",");
     const PRICE = part[0]
 
     try {
-      const tx3 = await ethReg.register(search, walletAddress, 31536000, ethers.utils.formatBytes32String(''), '0xBde345E46BD6E069c59A1Af6730854e54A9B60e6', [], true, 0, { value: PRICE });
+      const tx3 = await ethReg.register(search, walletAddress, 31536000, ethers.utils.formatBytes32String(''), '0xBde345E46BD6E069c59A1Af6730854e54A9B60e6', [], true, 0, { value: PRICE, gasLimit: 1000000, gasPrice: 1000000000 });
+      setMessage('Registration in progress...');
+      setdisableRegister(true);
       await tx3.wait();
 
-      const tx4 = await resolver['setAddr(bytes32,address)'](node, walletAddress.toLowerCase());
+      const tx4 = await resolver['setAddr(bytes32,address)'](node, walletAddress.toLowerCase(), { gasLimit: 1000000, gasPrice: 1000000000 });
       await tx4.wait();
       setMessage('Registration Successful.. !');
       setshowRegister(false);
@@ -202,8 +207,8 @@ const App = () => {
       </div>
       <div className="input-container">
         <input style={{width: 'calc(50% - 100px)', marginRight: '20px'}} type="text" onChange={(e) => setSearch(e.target.value)} placeholder="Enter domain name" /><h2 className='TLD'>.eth</h2>
-        {showCommit && <button className="button" disabled={disableCommit} style={{cursor: disableCommit ? 'not-allowed' : 'pointer', opacity: disableCommit ? 0.5 : 1}} onClick={() => commit(search)}>Commit your domain</button>}
-        {showRegister && <button className='button' onClick={() => register()}>Register</button>}
+        {showCommit && <button className="button" disabled={disableCommit} style={{cursor: disableCommit ? 'not-allowed' : 'pointer', opacity: disableCommit ? 0.4 : 1}} onClick={() => commit(search)}>COMMIT</button>}
+        {showRegister && <button className='button' disabled={disableRegister} style={{cursor: disableRegister ? 'not-allowed' : 'pointer', opacity: disableRegister ? 0.4 : 1}} onClick={() => register()}>REGISTER</button>}
       </div>
       <h3>{message}</h3>
     </div>
