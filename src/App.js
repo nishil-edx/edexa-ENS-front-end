@@ -54,7 +54,6 @@ const App = () => {
         console.error('Error fetching data:', error);
       }
     };
-<<<<<<< HEAD
     const handleAccountsChanged = (accounts) => {
       if (accounts.length === 0) {
         setWalletAddress(null);
@@ -68,8 +67,6 @@ const App = () => {
     if (window.ethereum) {
       window.ethereum.on('accountsChanged', handleAccountsChanged);
     }
-=======
->>>>>>> 480fddff3d386c051b56eca400880782365c1f94
 
     fetchENSName();
   }, [walletAddress]);
