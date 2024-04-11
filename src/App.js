@@ -4,6 +4,7 @@ import PublicResolverABI from './PublicResolverABI.json';
 import './App.css';
 import ensRegistry from './ens-registry.json';
 import ethRegistrarControllerABI from './ethRegistrarControllerABI.json';
+import avatar from './avatar.png';
 
 const App = () => {
   const [walletAddress, setWalletAddress] = useState('');
@@ -170,7 +171,7 @@ const App = () => {
       if (networkId === 1) {
         setNetwork('Ethereum');
       } else if (networkId === 1995) {
-        setNetwork('EDEXA testnet');
+        setNetwork('EDX testnet');
       } else if (networkId === 5) {
         setNetwork('Goerli');
       } else if (networkId === 17000) {
@@ -187,23 +188,34 @@ const App = () => {
   }, [isConnected]);
 
   return (
-    <div className="container" >
+    <div className="page-container">
+
+    <div className="CONNECT">
+    {isConnected&&network&&<button className='network'>{network}</button>}
+    <div className='board'> 
       {isConnected ? (
-        <button className="button2" disabled={true} >
-          Connected
+        <button className="button2" disabled={true}>
+        <img class="avatar" src={avatar} ></img>
+         {isConnected&&ensName&&<p className='name'>{ensName}</p>}{!ensName&&<p className='name'>{walletAddress.slice(0, 6)}..{walletAddress.slice(-4)}</p>}
         </button>
       ) : (
-        <button className="button" onClick={connectWallet}>
+        <button className="button1" onClick={connectWallet}>
           Connect Wallet
         </button>
       )}
+  </div>
+  {isConnected&&balance&&<button className='balance'>{balance.slice(0, 3)} ETH</button>}
+    
+
+    </div>
+    <div className="container">
+     
 
       <div className="info">
-        <p>Wallet Address: {walletAddress}</p>
-        <p>ENS Name: {ensName}</p>
-        <p>Network: {network}</p>
-        <p>Network ID: {networkId}</p>
-        <p>Balance: {balance} ETH</p>
+        <h1>Edexa ENS</h1><br></br>
+        
+        {ensName&& <p>Hello <p className="ens-name">{ensName}</p></p>}
+      
       </div>
       <div className="input-container">
         <input style={{width: 'calc(50% - 100px)', marginRight: '20px'}} type="text" onChange={(e) => setSearch(e.target.value)} placeholder="Enter domain name" /><h2 className='TLD'>.eth</h2>
@@ -211,6 +223,7 @@ const App = () => {
         {showRegister && <button className='button' disabled={disableRegister} style={{cursor: disableRegister ? 'not-allowed' : 'pointer', opacity: disableRegister ? 0.4 : 1}} onClick={() => register()}>REGISTER</button>}
       </div>
       <h3>{message}</h3>
+    </div>
     </div>
   );
 };
