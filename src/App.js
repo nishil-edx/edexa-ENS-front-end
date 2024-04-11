@@ -91,7 +91,7 @@ const App = () => {
     const address = await fetchAddress(search);
     if (address !== ethers.constants.AddressZero) {
       console.log("Domain already registered by:", address);
-      setMessage("Domain already registered by: " + address);
+      setMessage(<>Domain already registered by: <br></br><br></br><span style={{ color: 'grey',fontSize: '12px',marginTop: '15px' }}>{address}</span></>);
       return;
     }else {
       setMessage("domain is available. committing...");
