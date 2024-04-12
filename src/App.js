@@ -5,6 +5,7 @@ import './App.css';
 import ensRegistry from './ens-registry.json';
 import ethRegistrarControllerABI from './ethRegistrarControllerABI.json';
 import avatar from './avatar.png';
+import eth from './eth.png';
 
 const App = () => {
   const [walletAddress, setWalletAddress] = useState('');
@@ -71,7 +72,7 @@ const App = () => {
     }
 
     fetchENSName();
-  }, [walletAddress]);
+  }, [walletAddress,showRegister]);
 
   const fetchAddress = async (search) => {
     const node = ethers.utils.namehash(search + '.eth');
@@ -159,6 +160,8 @@ const App = () => {
       setshowRegister(false);
       setshowCommit(true);
       setdisableCommit(false);
+     
+      
     } catch (error) {
       console.log(error);
       setMessage('Error occurred while registering.. Try again later');
@@ -185,13 +188,19 @@ const App = () => {
       setNetwork('');
       setNetworkId('');
     }
-  }, [isConnected]);
+  }, [isConnected,networkId,walletAddress]);
 
   return (
     <div className="page-container">
 
     <div className="CONNECT">
-    {isConnected&&network&&<button className='network'>{network}</button>}
+
+      
+      {/* {isConnected&&network&&<img className="eth" src={eth} ></img>} */}
+      {isConnected&&network&&<button className='network'>{network}</button>}
+      
+     
+
     <div className='board'> 
       {isConnected ? (
         <button className="button2" disabled={true}>
@@ -204,7 +213,7 @@ const App = () => {
         </button>
       )}
   </div>
-  {isConnected&&balance&&<button className='balance'>{balance.slice(0, 3)} ETH</button>}
+  {isConnected&&balance&&<button className='balance'>{balance.slice(0, 6)} ETH</button>}
     
 
     </div>
@@ -215,11 +224,14 @@ const App = () => {
         <h1>Edexa ENS</h1><br></br>
         
         {ensName&& <p>Hello <p className="ens-name">{ensName}</p></p>}
+        {!ensName&& isConnected&&<p className='text'>Hello <p className="ens-name">{walletAddress.slice(0, 6)}..{walletAddress.slice(-4)}</p></p>}
+        {!ensName&&isConnected&&<p className='text'>You dont own a ENS. create on here..</p>}
+        {!ensName&&!isConnected&&<p className='text'>*connect wallet to use EDX ENS</p>}
       
       </div>
       <div className="input-container">
         <input style={{width: 'calc(50% - 100px)', marginRight: '20px'}} type="text" onChange={(e) => setSearch(e.target.value)} placeholder="Enter domain name" /><h2 className='TLD'>.eth</h2>
-        {showCommit && <button className="button" disabled={disableCommit} style={{cursor: disableCommit ? 'not-allowed' : 'pointer', opacity: disableCommit ? 0.4 : 1}} onClick={() => commit(search)}>COMMIT</button>}
+        {showCommit && <button className="button" disabled={disableCommit||!isConnected} style={{cursor: disableCommit ? 'not-allowed' : 'pointer', opacity: disableCommit ? 0.4 : 1}} onClick={() => commit(search)}>COMMIT</button>}
         {showRegister && <button className='button' disabled={disableRegister} style={{cursor: disableRegister ? 'not-allowed' : 'pointer', opacity: disableRegister ? 0.4 : 1}} onClick={() => register()}>REGISTER</button>}
       </div>
       <h3>{message}</h3>
