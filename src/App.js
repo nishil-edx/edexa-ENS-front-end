@@ -171,6 +171,7 @@ const App = () => {
   useEffect(() => {
     if (isConnected) {
       setNetworkId(networkId);
+      if(networkId !== 1995){setMessage("please connect to edexa testnet")};
       if (networkId === 1) {
         setNetwork('Ethereum');
       } else if (networkId === 1995) {
@@ -213,7 +214,7 @@ const App = () => {
         </button>
       )}
   </div>
-  {isConnected&&balance&&<button className='balance'>{balance.slice(0, 6)} ETH</button>}
+  {isConnected&&balance&&<button className='balance'>{balance.slice(0, 6)} {networkId==1995?'EDX':'ETH'}</button>}
     
 
     </div>
@@ -231,7 +232,7 @@ const App = () => {
       </div>
       <div className="input-container">
         <input style={{width: 'calc(50% - 100px)', marginRight: '20px'}} type="text" onChange={(e) => setSearch(e.target.value)} placeholder="Enter domain name" /><h2 className='TLD'>.eth</h2>
-        {showCommit && <button className="button" disabled={disableCommit||!isConnected} style={{cursor: disableCommit ? 'not-allowed' : 'pointer', opacity: disableCommit ? 0.4 : 1}} onClick={() => commit(search)}>COMMIT</button>}
+        {showCommit && <button className="button" disabled={disableCommit||!isConnected||networkId!==1995} style={{cursor: disableCommit ? 'not-allowed' : 'pointer', opacity: disableCommit ? 0.4 : 1}} onClick={() => commit(search)}>COMMIT</button>}
         {showRegister && <button className='button' disabled={disableRegister} style={{cursor: disableRegister ? 'not-allowed' : 'pointer', opacity: disableRegister ? 0.4 : 1}} onClick={() => register()}>REGISTER</button>}
       </div>
       <h3>{message}</h3>
