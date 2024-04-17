@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import PublicResolverABI from './PublicResolverABI.json';
 import './App.css';
-import ensRegistry from './ens-registry.json';
+//import ensRegistry from './ens-registry.json';
 import ethRegistrarControllerABI from './ethRegistrarControllerABI.json';
 import avatar from './avatar.png';
-import eth from './eth.png';
 
 const App = () => {
   const [walletAddress, setWalletAddress] = useState('');
@@ -47,7 +46,7 @@ const App = () => {
 
         const reverseName = `${accounts[0].slice(2)}.addr.reverse`;
         const node = ethers.utils.namehash(reverseName);
-        const resolverContract_ = new ethers.Contract('0xBde345E46BD6E069c59A1Af6730854e54A9B60e6', PublicResolverABI, provider);
+        const resolverContract_ = new ethers.Contract('0xEF1db68FaDfdD398886EE73Cbc34918Be51Ae304', PublicResolverABI.abi, provider);
         const ensName_ = await resolverContract_.name(node);
         setENSName(ensName_);
 
@@ -75,8 +74,8 @@ const App = () => {
   }, [walletAddress,showRegister]);
 
   const fetchAddress = async (search) => {
-    const node = ethers.utils.namehash(search + '.eth');
-    const resolverContract = new ethers.Contract('0xBde345E46BD6E069c59A1Af6730854e54A9B60e6', PublicResolverABI, provider); 
+    const node = ethers.utils.namehash(search + '.edx');
+    const resolverContract = new ethers.Contract('0xEF1db68FaDfdD398886EE73Cbc34918Be51Ae304', PublicResolverABI.abi, provider); 
     let owner = await resolverContract['addr(bytes32)'](node);
     if (owner !== ethers.constants.AddressZero) {
       return owner;
@@ -99,8 +98,8 @@ const App = () => {
     }
 
     const signer = provider.getSigner();
-    const ethReg = new ethers.Contract('0xB9e5B587276fb7d07d5c0D9E356221ea71a6EC1b', ethRegistrarControllerABI.abi, signer);
-    const tx = await ethReg.makeCommitment(search, walletAddress, 31536000, ethers.utils.formatBytes32String(''), '0xBde345E46BD6E069c59A1Af6730854e54A9B60e6', [], true, 0);
+    const ethReg = new ethers.Contract('0xDd381656dC7063ebcF4dCabeEfe9fe0F16f70618', ethRegistrarControllerABI.abi, signer);
+    const tx = await ethReg.makeCommitment(search, walletAddress, 31536000, ethers.utils.formatBytes32String(''), '0xEF1db68FaDfdD398886EE73Cbc34918Be51Ae304', [], true, 0);
     console.log("Commitment byte32:", tx);
     setdisableCommit(true);
 
@@ -137,10 +136,10 @@ const App = () => {
   }
 
   const register = async () => {
-    const node = ethers.utils.namehash(search + '.eth');
+    const node = ethers.utils.namehash(search +'.edx');
     const signer = provider.getSigner();
-    const ethReg = new ethers.Contract('0xB9e5B587276fb7d07d5c0D9E356221ea71a6EC1b', ethRegistrarControllerABI.abi, signer);
-    const resolver = new ethers.Contract('0xBde345E46BD6E069c59A1Af6730854e54A9B60e6', PublicResolverABI, signer);
+    const ethReg = new ethers.Contract('0xDd381656dC7063ebcF4dCabeEfe9fe0F16f70618', ethRegistrarControllerABI.abi, signer);
+    const resolver = new ethers.Contract('0xEF1db68FaDfdD398886EE73Cbc34918Be51Ae304', PublicResolverABI.abi, signer);
     const price = await ethReg.rentPrice(search, 31536000);
     setTimeout(() => {
       console.log("Price:", price.toString());
@@ -149,7 +148,7 @@ const App = () => {
     const PRICE = part[0]
 
     try {
-      const tx3 = await ethReg.register(search, walletAddress, 31536000, ethers.utils.formatBytes32String(''), '0xBde345E46BD6E069c59A1Af6730854e54A9B60e6', [], true, 0, { value: PRICE, gasLimit: 1000000, gasPrice: 1000000000 });
+      const tx3 = await ethReg.register(search, walletAddress, 31536000, ethers.utils.formatBytes32String(''), '0xEF1db68FaDfdD398886EE73Cbc34918Be51Ae304', [], true, 0, { value: PRICE, gasLimit: 1000000, gasPrice: 1000000000 });
       setMessage('Registration in progress...');
       setdisableRegister(true);
       await tx3.wait();
@@ -231,7 +230,7 @@ const App = () => {
       
       </div>
       <div className="input-container">
-        <input style={{width: 'calc(50% - 100px)', marginRight: '20px'}} type="text" onChange={(e) => setSearch(e.target.value)} placeholder="Enter domain name" /><h2 className='TLD'>.eth</h2>
+        <input style={{width: 'calc(50% - 100px)', marginRight: '20px'}} type="text" onChange={(e) => setSearch(e.target.value)} placeholder="Enter domain name" /><h2 className='TLD'>.edx</h2>
         {showCommit && <button className="button" disabled={disableCommit||!isConnected||networkId!==1995} style={{cursor: disableCommit ? 'not-allowed' : 'pointer', opacity: disableCommit ? 0.4 : 1}} onClick={() => commit(search)}>COMMIT</button>}
         {showRegister && <button className='button' disabled={disableRegister} style={{cursor: disableRegister ? 'not-allowed' : 'pointer', opacity: disableRegister ? 0.4 : 1}} onClick={() => register()}>REGISTER</button>}
       </div>
