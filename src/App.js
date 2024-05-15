@@ -20,6 +20,9 @@ const App = () => {
   const [disableRegister, setdisableRegister] = useState(false);
   const [showRegister, setshowRegister] = useState(false);
   const [showCommit, setshowCommit] = useState(true);
+  
+  const resolverAddress = '0xcE852eCfFF9F72AD58Cc185C52149b23266e2937';
+  const ethRegistrarControllerAddress = '0x990aF4c02eBd91Dfb05Da36c02865C718DBA5535';
 
   const connectWallet = async () => {
     try {
@@ -46,7 +49,7 @@ const App = () => {
 
         const reverseName = `${accounts[0].slice(2)}.addr.reverse`;
         const node = ethers.utils.namehash(reverseName);
-        const resolverContract_ = new ethers.Contract('0xEF1db68FaDfdD398886EE73Cbc34918Be51Ae304', PublicResolverABI.abi, provider);
+        const resolverContract_ = new ethers.Contract(resolverAddress, PublicResolverABI.abi, provider);
         const ensName_ = await resolverContract_.name(node);
         setENSName(ensName_);
 
@@ -75,7 +78,7 @@ const App = () => {
 
   const fetchAddress = async (search) => {
     const node = ethers.utils.namehash(search + '.edx');
-    const resolverContract = new ethers.Contract('0xEF1db68FaDfdD398886EE73Cbc34918Be51Ae304', PublicResolverABI.abi, provider); 
+    const resolverContract = new ethers.Contract(resolverAddress, PublicResolverABI.abi, provider); 
     let owner = await resolverContract['addr(bytes32)'](node);
     if (owner !== ethers.constants.AddressZero) {
       return owner;
@@ -98,8 +101,8 @@ const App = () => {
     }
 
     const signer = provider.getSigner();
-    const ethReg = new ethers.Contract('0xDd381656dC7063ebcF4dCabeEfe9fe0F16f70618', ethRegistrarControllerABI.abi, signer);
-    const tx = await ethReg.makeCommitment(search, walletAddress, 31536000, ethers.utils.formatBytes32String(''), '0xEF1db68FaDfdD398886EE73Cbc34918Be51Ae304', [], true, 0);
+    const ethReg = new ethers.Contract(ethRegistrarControllerAddress, ethRegistrarControllerABI.abi, signer);
+    const tx = await ethReg.makeCommitment(search, walletAddress, 31536000, ethers.utils.formatBytes32String(''), resolverAddress, [], true, 0);
     console.log("Commitment byte32:", tx);
     setdisableCommit(true);
 
@@ -138,8 +141,8 @@ const App = () => {
   const register = async () => {
     const node = ethers.utils.namehash(search +'.edx');
     const signer = provider.getSigner();
-    const ethReg = new ethers.Contract('0xDd381656dC7063ebcF4dCabeEfe9fe0F16f70618', ethRegistrarControllerABI.abi, signer);
-    const resolver = new ethers.Contract('0xEF1db68FaDfdD398886EE73Cbc34918Be51Ae304', PublicResolverABI.abi, signer);
+    const ethReg = new ethers.Contract(ethRegistrarControllerAddress, ethRegistrarControllerABI.abi, signer);
+    const resolver = new ethers.Contract(resolverAddress, PublicResolverABI.abi, signer);
     const price = await ethReg.rentPrice(search, 31536000);
     setTimeout(() => {
       console.log("Price:", price.toString());
@@ -148,7 +151,7 @@ const App = () => {
     const PRICE = part[0]
 
     try {
-      const tx3 = await ethReg.register(search, walletAddress, 31536000, ethers.utils.formatBytes32String(''), '0xEF1db68FaDfdD398886EE73Cbc34918Be51Ae304', [], true, 0, { value: PRICE, gasLimit: 1000000, gasPrice: 1000000000 });
+      const tx3 = await ethReg.register(search, walletAddress, 31536000, ethers.utils.formatBytes32String(''), resolverAddress, [], true, 0, { value: PRICE, gasLimit: 1000000, gasPrice: 1000000000 });
       setMessage('Registration in progress...');
       setdisableRegister(true);
       await tx3.wait();
