@@ -128,8 +128,8 @@ const App = () => {
   }
 
   const testinput = (e) => {
-    const regex = /^[a-zA-Z0-9-]{4,}$/;
-    if (!regex.test(e) || e.startsWith('.') || e.endsWith('.')) {
+    const regex = /^[a-zA-Z0-9-.]{4,}$/;
+    if (!regex.test(e) || e.startsWith('.') || e.endsWith('.')||e.endsWith('.edx')) {
       setMessage('Please enter a valid domain (min 4 characters) that does not start or end with a dot (.)');
       return false;
     } else {
