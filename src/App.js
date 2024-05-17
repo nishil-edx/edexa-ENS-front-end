@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 import PublicResolverABI from './PublicResolverABI.json';
 import './App.css';
 //import ensRegistry from './ens-registry.json';
-import ethRegistrarControllerABI from './ethRegistrarControllerABI.json';
+import edxRegistrarControllerABI from './edxRegistrarControllerABI.json';
 import avatar from './avatar.png';
 
 const App = () => {
@@ -21,8 +21,8 @@ const App = () => {
   const [showRegister, setshowRegister] = useState(false);
   const [showCommit, setshowCommit] = useState(true);
   
-  const resolverAddress = '0xcE852eCfFF9F72AD58Cc185C52149b23266e2937';
-  const ethRegistrarControllerAddress = '0x990aF4c02eBd91Dfb05Da36c02865C718DBA5535';
+  const resolverAddress = '0x61c743B3fA8714915fc5687Bb6b4903d11cF2146';
+  const edxRegistrarControllerAddress = '0x3FF5908aF09530bdf7E351b461e8888f3875Fb58';
 
   const connectWallet = async () => {
     try {
@@ -101,12 +101,12 @@ const App = () => {
     }
 
     const signer = provider.getSigner();
-    const ethReg = new ethers.Contract(ethRegistrarControllerAddress, ethRegistrarControllerABI.abi, signer);
-    const tx = await ethReg.makeCommitment(search, walletAddress, 31536000, ethers.utils.formatBytes32String(''), resolverAddress, [], true, 0);
+    const edxReg = new ethers.Contract(edxRegistrarControllerAddress, edxRegistrarControllerABI.abi, signer);
+    const tx = await edxReg.makeCommitment(search, walletAddress, 31536000, ethers.utils.formatBytes32String(''), resolverAddress, [], true, 0);
     console.log("Commitment byte32:", tx);
     setdisableCommit(true);
 
-    const tx2 = await ethReg.commit(tx);
+    const tx2 = await edxReg.commit(tx);
     setdisableCommit(true);
     await tx2.wait();
     console.log("Commit:", tx2);
@@ -141,9 +141,9 @@ const App = () => {
   const register = async () => {
     const node = ethers.utils.namehash(search +'.edx');
     const signer = provider.getSigner();
-    const ethReg = new ethers.Contract(ethRegistrarControllerAddress, ethRegistrarControllerABI.abi, signer);
+    const edxReg = new ethers.Contract(edxRegistrarControllerAddress, edxRegistrarControllerABI.abi, signer);
     const resolver = new ethers.Contract(resolverAddress, PublicResolverABI.abi, signer);
-    const price = await ethReg.rentPrice(search, 31536000);
+    const price = await edxReg.rentPrice(search, 31536000);
     setTimeout(() => {
       console.log("Price:", price.toString());
     }, 1000);
@@ -151,7 +151,7 @@ const App = () => {
     const PRICE = part[0]
 
     try {
-      const tx3 = await ethReg.register(search, walletAddress, 31536000, ethers.utils.formatBytes32String(''), resolverAddress, [], true, 0, { value: PRICE, gasLimit: 1000000, gasPrice: 1000000000 });
+      const tx3 = await edxReg.register(search, walletAddress, 31536000, ethers.utils.formatBytes32String(''), resolverAddress, [], true, 0, { value: PRICE, gasLimit: 1000000, gasPrice: 1000000000 });
       setMessage('Registration in progress...');
       setdisableRegister(true);
       await tx3.wait();
