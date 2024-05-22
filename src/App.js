@@ -21,8 +21,8 @@ const App = () => {
   const [showRegister, setshowRegister] = useState(false);
   const [showCommit, setshowCommit] = useState(true);
   
-  const resolverAddress               = '0x61c743B3fA8714915fc5687Bb6b4903d11cF2146';
-  const edxRegistrarControllerAddress = '0x3FF5908aF09530bdf7E351b461e8888f3875Fb58';
+  const [resolverAddress, setResolverAddress]  = useState('');
+  const [edxRegistrarControllerAddress, setedxRegistrarControllerAddress] = useState('');
 
   const connectWallet = async () => {
     try {
@@ -44,6 +44,21 @@ const App = () => {
         const accounts = await provider.listAccounts();
         if (!accounts[0]) return;
         setNetworkId(networkId);
+         
+      if (networkId == 1995) {
+        setNetwork('EDX testnet');
+        setResolverAddress('0x61c743B3fA8714915fc5687Bb6b4903d11cF2146');
+        setedxRegistrarControllerAddress('0x3FF5908aF09530bdf7E351b461e8888f3875Fb58');
+      }
+        else if (networkId == 5424) {
+          setNetwork('EDX MAINNET');
+          setResolverAddress('0x7Bd7f30Cd71f3A30d6b7df61ce18b22001952a47');
+          setedxRegistrarControllerAddress('0x97Cd4BfBF2d0a6Fd3163cD974ecB6077e4425d0d');
+        }else {
+          setNetwork('Unknown network');
+          setMessage('Please connect to edexa testnet or mainnet');
+        }
+
         setWalletAddress(accounts[0]);
         setIsConnected(true);
 
@@ -181,28 +196,6 @@ const App = () => {
     }
   }
 
-  useEffect(() => {
-    if (isConnected) {
-      setNetworkId(networkId);
-      if(networkId !== 1995){setMessage("please connect to edexa testnet")};
-      if (networkId === 1) {
-        setNetwork('Ethereum');
-      } else if (networkId === 1995) {
-        setNetwork('EDX testnet');
-      } else if (networkId === 5) {
-        setNetwork('Goerli');
-      } else if (networkId === 17000) {
-        setNetwork('Holesky testnet');
-      } else if (networkId === 11155111) {
-        setNetwork('Sepolia');
-      }
-    } else {
-      setBalance('');
-      setENSName('');
-      setNetwork('');
-      setNetworkId('');
-    }
-  }, [isConnected,networkId,walletAddress]);
 
   return (
     <div className="page-container">
@@ -245,7 +238,7 @@ const App = () => {
       </div>
       <div className="input-container">
         <input style={{width: 'calc(50% - 100px)', marginRight: '20px'}} type="text" onChange={(e) => setSearch(e.target.value)} placeholder="Enter domain name" /><h2 className='TLD'>.edx</h2>
-        {showCommit && <button className="button" disabled={disableCommit||!isConnected||networkId!==1995} style={{cursor: disableCommit ? 'not-allowed' : 'pointer', opacity: disableCommit ? 0.4 : 1}} onClick={() => commit(search)}>COMMIT</button>}
+        {showCommit && <button className="button" disabled={disableCommit||!isConnected||networkId!=1995||networkId!=5424} style={{cursor: disableCommit ? 'not-allowed' : 'pointer', opacity: disableCommit ? 0.4 : 1}} onClick={() => commit(search)}>COMMIT</button>}
         {showRegister && <button className='button' disabled={disableRegister} style={{cursor: disableRegister ? 'not-allowed' : 'pointer', opacity: disableRegister ? 0.4 : 1}} onClick={() => register()}>REGISTER</button>}
       </div>
       <h3>{message}</h3>
