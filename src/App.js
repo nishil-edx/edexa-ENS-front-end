@@ -21,7 +21,7 @@ const App = () => {
   const [showRegister, setshowRegister] = useState(false);
   const [showCommit, setshowCommit] = useState(true);
   
-  const resolverAddress = '0x61c743B3fA8714915fc5687Bb6b4903d11cF2146';
+  const resolverAddress               = '0x61c743B3fA8714915fc5687Bb6b4903d11cF2146';
   const edxRegistrarControllerAddress = '0x3FF5908aF09530bdf7E351b461e8888f3875Fb58';
 
   const connectWallet = async () => {
@@ -164,7 +164,7 @@ const App = () => {
        setTimeout(() => {
         //wait 2 sec
       }, 2200);
-      
+
       const tx4 = await resolver['setAddr(bytes32,address)'](node, walletAddress.toLowerCase());
       await tx4.wait();
 
