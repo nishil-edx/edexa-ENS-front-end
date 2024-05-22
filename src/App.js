@@ -151,13 +151,24 @@ const App = () => {
     const PRICE = part[0]
 
     try {
+      setTimeout(() => {
+        //wait 2 sec
+      },2000);
       const tx3 = await edxReg.register(search, walletAddress, 31536000, ethers.utils.formatBytes32String(''), resolverAddress, [], true, 0, { value: PRICE, gasLimit: 1000000, gasPrice: 1000000000 });
       setMessage('Registration in progress...');
       setdisableRegister(true);
       await tx3.wait();
 
-      const tx4 = await resolver['setAddr(bytes32,address)'](node, walletAddress.toLowerCase(), { gasLimit: 1000000, gasPrice: 1000000000 });
+      // call to resolver
+
+       setTimeout(() => {
+        //wait 2 sec
+      }, 2200);
+      
+      const tx4 = await resolver['setAddr(bytes32,address)'](node, walletAddress.toLowerCase());
       await tx4.wait();
+
+     
       setMessage('Registration Successful.. !');
       setshowRegister(false);
       setshowCommit(true);
