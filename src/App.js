@@ -55,7 +55,7 @@ const App = () => {
           setResolverAddress('0x7Bd7f30Cd71f3A30d6b7df61ce18b22001952a47');
           setedxRegistrarControllerAddress('0x97Cd4BfBF2d0a6Fd3163cD974ecB6077e4425d0d');
         }else {
-          setNetwork('Unknown network');
+          setNetwork('unknown network');
           setMessage('Please connect to edexa testnet or mainnet');
         }
 
@@ -220,7 +220,7 @@ const App = () => {
         </button>
       )}
   </div>
-  {isConnected&&balance&&<button className='balance'>{balance.slice(0, 6)} {networkId==1995?'EDX':'ETH'}</button>}
+  {isConnected&&balance&&<button className='balance'>{balance.slice(0, 6)} {'EDX'}</button>}
     
 
     </div>
@@ -238,7 +238,7 @@ const App = () => {
       </div>
       <div className="input-container">
         <input style={{width: 'calc(50% - 100px)', marginRight: '20px'}} type="text" onChange={(e) => setSearch(e.target.value)} placeholder="Enter domain name" /><h2 className='TLD'>.edx</h2>
-        {showCommit && <button className="button" disabled={disableCommit||!isConnected||networkId!=1995||networkId!=5424} style={{cursor: disableCommit ? 'not-allowed' : 'pointer', opacity: disableCommit ? 0.4 : 1}} onClick={() => commit(search)}>COMMIT</button>}
+        {showCommit && <button className="button" disabled={disableCommit||!isConnected} style={{cursor: disableCommit ? 'not-allowed' : 'pointer', opacity: disableCommit ? 0.4 : 1}} onClick={() => commit(search)}>COMMIT</button>}
         {showRegister && <button className='button' disabled={disableRegister} style={{cursor: disableRegister ? 'not-allowed' : 'pointer', opacity: disableRegister ? 0.4 : 1}} onClick={() => register()}>REGISTER</button>}
       </div>
       <h3>{message}</h3>
