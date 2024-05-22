@@ -168,7 +168,7 @@ const App = () => {
     try {
       setTimeout(() => {
         //wait 2 sec
-      },2000);
+      },1000);
       const tx3 = await edxReg.register(search, walletAddress, 31536000, ethers.utils.formatBytes32String(''), resolverAddress, [], true, 0, { value: PRICE, gasLimit: 1000000, gasPrice: 1000000000 });
       setMessage('Registration in progress...');
       setdisableRegister(true);
