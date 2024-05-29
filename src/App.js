@@ -178,9 +178,9 @@ const App = () => {
 
        setTimeout(() => {
         //wait 2 sec
-      }, 2200);
+      }, 4000);
 
-      const tx4 = await resolver['setAddr(bytes32,address)'](node, walletAddress.toLowerCase());
+      const tx4 = await resolver['setAddr(bytes32,address)'](node, walletAddress.toLowerCase(),{gasLimit: 1000000, gasPrice: 1000000000});
       await tx4.wait();
 
      
