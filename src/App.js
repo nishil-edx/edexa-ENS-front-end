@@ -71,8 +71,8 @@ const App = () => {
         const reverseName = `${accounts[0].slice(2)}.addr.reverse`;
         const node = ethers.utils.namehash(reverseName);
         const resolverContract_ = new ethers.Contract(resolverAddress, PublicResolverABI.abi, provider);
-        const ensName_ = await resolverContract_.name(node);
-        setENSName(ensName_);
+        if(isConnected){const ensName_ = await resolverContract_.name(node);
+        setENSName(ensName_);}
 
         const balance = await provider.getBalance(accounts[0]);
         setBalance(ethers.utils.formatEther(balance));
@@ -208,7 +208,7 @@ const App = () => {
     console.log(DATA)
 
 
-      const tx3 = await edxReg.register(search, walletAddress, 31536000, ethers.utils.formatBytes32String(''), resolverAddress, [DATA], true, 0, { value: PRICE});
+      const tx3 = await edxReg.register(search, walletAddress, 31536000, ethers.utils.formatBytes32String(''), resolverAddress, [DATA], true, 0, { value: PRICE ,gasLimit:10000000000});
       setMessage('Registration in progress...');
       setdisableRegister(true);
       await tx3.wait();
