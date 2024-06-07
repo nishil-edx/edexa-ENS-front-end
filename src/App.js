@@ -77,10 +77,10 @@ const App = () => {
         const reverseName = `${accounts[0].slice(2)}.addr.reverse`;
         const node = ethers.utils.namehash(reverseName);
         const resolverContract_ = new ethers.Contract(resolverAddress, PublicResolverABI.abi, provider);
-        if(isConnected==true){
-          const ensName_ = await resolverContract_.name(node);
+        
+        const ensName_ = await resolverContract_.name(node);
         setENSName(ensName_);
-        }
+        
 
         const balance = await provider.getBalance(accounts[0]);
         setBalance(ethers.utils.formatEther(balance));
