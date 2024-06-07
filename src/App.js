@@ -53,21 +53,21 @@ const App = () => {
         if (!accounts[0]) return;
         setNetworkId(Id);
 
-         setTimeout(() => {
-          
-         }, 1000);
-      setMessage('');  
+        
+     
       if (networkId == 1995) {
         setNetwork('EDX testnet');
         setResolverAddress('0x4d09E3dA178aAd688053BcBadfd0477382A75389');
         setedxRegistrarControllerAddress('0x420B76d24cC0099303bC0DE1F4C4B150A18104C2');
-        setGas(16234336);
+        setGas(1000000);
+        setMessage("")
       }
         else if (networkId == 5424) {
           setNetwork('EDX MAINNET');
           setResolverAddress('0x4344E466e3B38EF4f728800dB8524170a05565B7');
           setedxRegistrarControllerAddress('0xc8CEebF83a7f923d2B1F1e43D04398f2b9056000');
           setGas(30000000);
+          setMessage("")
         }else {
           setNetwork('unknown network');
           setMessage('Please connect to edexa testnet or mainnet');
@@ -79,15 +79,15 @@ const App = () => {
         const reverseName = `${accounts[0].slice(2)}.addr.reverse`;
         const node = ethers.utils.namehash(reverseName);
         const resolverContract_ = new ethers.Contract(resolverAddress, PublicResolverABI.abi, provider);
-        if(isConnected==true){
-          const ensName_ = await resolverContract_.name(node);
+        
+        const ensName_ = await resolverContract_.name(node);
         setENSName(ensName_);
-        }
+        
 
         const balance = await provider.getBalance(accounts[0]);
         setBalance(ethers.utils.formatEther(balance));
       } catch (error) {
-        console.error('Error fetching data:', error);
+        
       }
     };
     const handleAccountsChanged = (accounts) => {
@@ -153,7 +153,7 @@ const App = () => {
     console.log("Commitment byte32:", tx);
     setdisableCommit(true);
 
-    const tx2 = await edxReg.commit(tx);
+    const tx2 = await edxReg.commit(tx,{gasLimit: gas});
     setdisableCommit(true);
     await tx2.wait();
     console.log("Commit:", tx2);
@@ -191,9 +191,7 @@ const App = () => {
     const edxReg = new ethers.Contract(edxRegistrarControllerAddress, edxRegistrarControllerABI.abi, signer);
     // const resolver = new ethers.Contract(resolverAddress, PublicResolverABI.abi, signer);
     const price = await edxReg.rentPrice(search, 31536000);
-    setTimeout(() => {
-      console.log("Price:", price.toString());
-    }, 2000);
+    
     const part = (price.toString()).split(",");
     const PRICE = part[0]
 
