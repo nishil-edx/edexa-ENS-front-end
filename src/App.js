@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import PublicResolverABI from './PublicResolverABI.json';
 import './App.css';
-//import ensRegistry from './ens-registry.json';
 import edxRegistrarControllerABI from './edxRegistrarControllerABI.json';
 import avatar from './avatar.png';
 
@@ -136,17 +135,17 @@ const App = () => {
     const DATA = resolver.interface.encodeFunctionData('setAddr(bytes32,address)', [node,wall]);
 
 
-    console.log(DATA)
+    // console.log(DATA)
 
 
     const tx = await edxReg.makeCommitment(search, walletAddress, 31536000, ethers.utils.formatBytes32String(''), resolverAddress, [DATA], true, 0);
-    console.log("Commitment byte32:", tx);
+    // console.log("Commitment byte32:", tx);
     setdisableCommit(true);
 
     const tx2 = await edxReg.commit(tx);
     setdisableCommit(true);
     await tx2.wait();
-    console.log("Commit:", tx2);
+    // console.log("Commit:", tx2);
     setMessage('Commitment Successful. Please wait 60 seconds for registration.');
     
     setTimeout(() => {
@@ -182,7 +181,7 @@ const App = () => {
     const resolver = new ethers.Contract(resolverAddress, PublicResolverABI.abi, signer);
     const price = await edxReg.rentPrice(search, 31536000);
     setTimeout(() => {
-      console.log("Price:", price.toString());
+      // console.log("Price:", price.toString());
     }, 1000);
     const part = (price.toString()).split(",");
     const PRICE = part[0]
@@ -205,22 +204,13 @@ const App = () => {
     const DATA = resolver.interface.encodeFunctionData('setAddr(bytes32,address)', [node,wall]);
 
 
-    console.log(DATA)
+    // console.log(DATA)
 
 
       const tx3 = await edxReg.register(search, walletAddress, 31536000, ethers.utils.formatBytes32String(''), resolverAddress, [DATA], true, 0, { value: PRICE, gasLimit: 1000000, gasPrice: 1000000000 });
       setMessage('Registration in progress...');
       setdisableRegister(true);
       await tx3.wait();
-
-      // call to resolver
-
-      //  setTimeout(() => {
-      //   //wait 2 sec
-      // }, 4000);
-
-      // const tx4 = await resolver['setAddr(bytes32,address)'](node, walletAddress.toLowerCase(),{gasLimit: 1000000, gasPrice: 1000000000});
-      // await tx4.wait();
 
      
       setMessage('Registration Successful.. !');
