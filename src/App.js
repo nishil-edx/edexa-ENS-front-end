@@ -87,7 +87,7 @@ const App = () => {
         const balance = await provider.getBalance(accounts[0]);
         setBalance(ethers.utils.formatEther(balance));
       } catch (error) {
-        console.error('Error fetching data:', error);
+        
       }
     };
     const handleAccountsChanged = (accounts) => {
