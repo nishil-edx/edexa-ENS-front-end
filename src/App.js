@@ -60,12 +60,14 @@ const App = () => {
         setResolverAddress('0x4d09E3dA178aAd688053BcBadfd0477382A75389');
         setedxRegistrarControllerAddress('0x420B76d24cC0099303bC0DE1F4C4B150A18104C2');
         setGas(1000000);
+        setMessage("")
       }
         else if (networkId == 5424) {
           setNetwork('EDX MAINNET');
           setResolverAddress('0x4344E466e3B38EF4f728800dB8524170a05565B7');
           setedxRegistrarControllerAddress('0xc8CEebF83a7f923d2B1F1e43D04398f2b9056000');
           setGas(30000000);
+          setMessage("")
         }else {
           setNetwork('unknown network');
           setMessage('Please connect to edexa testnet or mainnet');
