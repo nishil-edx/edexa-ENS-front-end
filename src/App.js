@@ -32,6 +32,12 @@ const App = () => {
     }
   };
   
+
+
+
+
+
+  
   useEffect(() => {
     const fetchENSName = async () => {
       try {
@@ -117,7 +123,23 @@ const App = () => {
 
     const signer = provider.getSigner();
     const edxReg = new ethers.Contract(edxRegistrarControllerAddress, edxRegistrarControllerABI.abi, signer);
-    const tx = await edxReg.makeCommitment(search, walletAddress, 31536000, ethers.utils.formatBytes32String(''), resolverAddress, [], true, 0);
+    const resolverAbi = [
+      "function setAddr(bytes32 node, address a) external",
+      "function setAddr(bytes32 node, uint256 coinType, bytes a) external",
+  ];
+    const resolver = new ethers.Contract(resolverAddress, resolverAbi, signer);
+
+    const wall = await signer.getAddress(); 
+
+    const node = ethers.utils.namehash(`${search}.edx`);
+
+    const DATA = resolver.interface.encodeFunctionData('setAddr(bytes32,address)', [node,wall]);
+
+
+    console.log(DATA)
+
+
+    const tx = await edxReg.makeCommitment(search, walletAddress, 31536000, ethers.utils.formatBytes32String(''), resolverAddress, [DATA], true, 0);
     console.log("Commitment byte32:", tx);
     setdisableCommit(true);
 
@@ -166,22 +188,39 @@ const App = () => {
     const PRICE = part[0]
 
     try {
-      setTimeout(() => {
-        //wait 2 sec
-      },1000);
-      const tx3 = await edxReg.register(search, walletAddress, 31536000, ethers.utils.formatBytes32String(''), resolverAddress, [], true, 0, { value: PRICE, gasLimit: 1000000, gasPrice: 1000000000 });
+    
+     
+    const signer = provider.getSigner();
+    const edxReg = new ethers.Contract(edxRegistrarControllerAddress, edxRegistrarControllerABI.abi, signer);
+    const resolverAbi = [
+      "function setAddr(bytes32 node, address a) external",
+      "function setAddr(bytes32 node, uint256 coinType, bytes a) external",
+  ];
+    const resolver = new ethers.Contract(resolverAddress, resolverAbi, signer);
+
+    const wall = await signer.getAddress(); 
+
+    const node = ethers.utils.namehash(`${search}.edx`);
+
+    const DATA = resolver.interface.encodeFunctionData('setAddr(bytes32,address)', [node,wall]);
+
+
+    console.log(DATA)
+
+
+      const tx3 = await edxReg.register(search, walletAddress, 31536000, ethers.utils.formatBytes32String(''), resolverAddress, [DATA], true, 0, { value: PRICE, gasLimit: 1000000, gasPrice: 1000000000 });
       setMessage('Registration in progress...');
       setdisableRegister(true);
       await tx3.wait();
 
       // call to resolver
 
-       setTimeout(() => {
-        //wait 2 sec
-      }, 4000);
+      //  setTimeout(() => {
+      //   //wait 2 sec
+      // }, 4000);
 
-      const tx4 = await resolver['setAddr(bytes32,address)'](node, walletAddress.toLowerCase(),{gasLimit: 1000000, gasPrice: 1000000000});
-      await tx4.wait();
+      // const tx4 = await resolver['setAddr(bytes32,address)'](node, walletAddress.toLowerCase(),{gasLimit: 1000000, gasPrice: 1000000000});
+      // await tx4.wait();
 
      
       setMessage('Registration Successful.. !');
