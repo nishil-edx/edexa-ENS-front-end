@@ -20,11 +20,10 @@ const App = () => {
   const [disableRegister, setdisableRegister] = useState(false);
   const [showRegister, setshowRegister] = useState(false);
   const [showCommit, setshowCommit] = useState(true);
+  const [gas, setGas] = useState(21000);
   
   const [resolverAddress, setResolverAddress]  = useState('');
   const [edxRegistrarControllerAddress, setedxRegistrarControllerAddress] = useState('');
-
-  const[gas, setGas] = useState(30000000);
 
   const connectWallet = async () => {
     try {
@@ -48,30 +47,28 @@ const App = () => {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         setProvider(provider);
         const network = await provider.getNetwork();
-        const Id = network.chainId;
+        const networkId = network.chainId;
         const accounts = await provider.listAccounts();
         if (!accounts[0]) return;
-        setNetworkId(Id);
-
-        
-     
-      if (networkId == 1995) {
-        setNetwork('EDX testnet');
-        setResolverAddress('0x4d09E3dA178aAd688053BcBadfd0477382A75389');
-        setedxRegistrarControllerAddress('0x420B76d24cC0099303bC0DE1F4C4B150A18104C2');
-        setGas(1000000);
-        setMessage("")
-      }
-        else if (networkId == 5424) {
-          setNetwork('EDX MAINNET');
-          setResolverAddress('0x4344E466e3B38EF4f728800dB8524170a05565B7');
-          setedxRegistrarControllerAddress('0xc8CEebF83a7f923d2B1F1e43D04398f2b9056000');
-          setGas(30000000);
-          setMessage("")
-        }else {
-          setNetwork('unknown network');
-          setMessage('Please connect to edexa testnet or mainnet');
+        setNetworkId(networkId);
+         
+        if (networkId == 1995) {
+          setNetwork('EDX testnet');
+          setResolverAddress('0x4d09E3dA178aAd688053BcBadfd0477382A75389');
+          setedxRegistrarControllerAddress('0x420B76d24cC0099303bC0DE1F4C4B150A18104C2');
+          setGas(1000000);
+         
         }
+          else if (networkId == 5424) {
+            setNetwork('EDX MAINNET');
+            setResolverAddress('0x4344E466e3B38EF4f728800dB8524170a05565B7');
+            setedxRegistrarControllerAddress('0xc8CEebF83a7f923d2B1F1e43D04398f2b9056000');
+            setGas(30000000);
+            
+          }else {
+            setNetwork('unknown network');
+            setMessage('Please connect to edexa testnet or mainnet');
+          }
 
         setWalletAddress(accounts[0]);
         setIsConnected(true);
@@ -79,15 +76,13 @@ const App = () => {
         const reverseName = `${accounts[0].slice(2)}.addr.reverse`;
         const node = ethers.utils.namehash(reverseName);
         const resolverContract_ = new ethers.Contract(resolverAddress, PublicResolverABI.abi, provider);
-        
         const ensName_ = await resolverContract_.name(node);
         setENSName(ensName_);
-        
 
         const balance = await provider.getBalance(accounts[0]);
         setBalance(ethers.utils.formatEther(balance));
       } catch (error) {
-        
+        console.error('Error fetching data:', error);
       }
     };
     const handleAccountsChanged = (accounts) => {
@@ -153,7 +148,7 @@ const App = () => {
     console.log("Commitment byte32:", tx);
     setdisableCommit(true);
 
-    const tx2 = await edxReg.commit(tx,{gasLimit: gas});
+    const tx2 = await edxReg.commit(tx);
     setdisableCommit(true);
     await tx2.wait();
     console.log("Commit:", tx2);
@@ -164,7 +159,7 @@ const App = () => {
       setdisableRegister(false);
       setshowCommit(false);
       setMessage('register now...');
-    }, 12000);
+    }, 11000);
 
 
   } catch (error) {
@@ -186,12 +181,14 @@ const App = () => {
   }
 
   const register = async () => {
-    // const node = ethers.utils.namehash(search +'.edx');
+    const node = ethers.utils.namehash(search +'.edx');
     const signer = provider.getSigner();
     const edxReg = new ethers.Contract(edxRegistrarControllerAddress, edxRegistrarControllerABI.abi, signer);
-    // const resolver = new ethers.Contract(resolverAddress, PublicResolverABI.abi, signer);
+    const resolver = new ethers.Contract(resolverAddress, PublicResolverABI.abi, signer);
     const price = await edxReg.rentPrice(search, 31536000);
-    
+    setTimeout(() => {
+      console.log("Price:", price.toString());
+    }, 1000);
     const part = (price.toString()).split(",");
     const PRICE = part[0]
 
@@ -216,7 +213,7 @@ const App = () => {
     console.log(DATA)
 
 
-      const tx3 = await edxReg.register(search, walletAddress, 31536000, ethers.utils.formatBytes32String(''), resolverAddress, [DATA], true, 0, { value: PRICE ,gasLimit:gas});
+      const tx3 = await edxReg.register(search, walletAddress, 31536000, ethers.utils.formatBytes32String(''), resolverAddress, [DATA], true, 0, { value: PRICE, gasLimit: 1000000, gasPrice: 1000000000 });
       setMessage('Registration in progress...');
       setdisableRegister(true);
       await tx3.wait();
@@ -258,7 +255,7 @@ const App = () => {
     <div className='board'> 
       {isConnected ? (
         <button className="button2" disabled={true}>
-        <img className="avatar" src={avatar} ></img>
+        <img class="avatar" src={avatar} ></img>
          {isConnected&&ensName&&<p className='name'>{ensName}</p>}{!ensName&&<p className='name'>{walletAddress.slice(0, 6)}..{walletAddress.slice(-4)}</p>}
         </button>
       ) : (
@@ -277,8 +274,8 @@ const App = () => {
       <div className="info">
         <h1>Edexa ENS</h1><br></br>
         
-        {ensName&& <h3>Hello <p className="ens-name">{ensName}</p></h3>}
-        {!ensName&& isConnected&&<h3 className='text'>Hello <p className="ens-name">{walletAddress.slice(0, 6)}..{walletAddress.slice(-4)}</p></h3>}
+        {ensName&& <p>Hello <p className="ens-name">{ensName}</p></p>}
+        {!ensName&& isConnected&&<p className='text'>Hello <p className="ens-name">{walletAddress.slice(0, 6)}..{walletAddress.slice(-4)}</p></p>}
         {!ensName&&isConnected&&<p className='text'>You dont own a ENS. create on here..</p>}
         {!ensName&&!isConnected&&<p className='text'>*connect wallet to use EDX ENS</p>}
       
