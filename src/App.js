@@ -53,10 +53,8 @@ const App = () => {
         if (!accounts[0]) return;
         setNetworkId(Id);
 
-         setTimeout(() => {
-          
-         }, 1000);
-      setMessage('');  
+        
+     
       if (networkId == 1995) {
         setNetwork('EDX testnet');
         setResolverAddress('0x4d09E3dA178aAd688053BcBadfd0477382A75389');
@@ -153,7 +151,7 @@ const App = () => {
     console.log("Commitment byte32:", tx);
     setdisableCommit(true);
 
-    const tx2 = await edxReg.commit(tx);
+    const tx2 = await edxReg.commit(tx,{gasLimit: gas});
     setdisableCommit(true);
     await tx2.wait();
     console.log("Commit:", tx2);
@@ -191,9 +189,7 @@ const App = () => {
     const edxReg = new ethers.Contract(edxRegistrarControllerAddress, edxRegistrarControllerABI.abi, signer);
     // const resolver = new ethers.Contract(resolverAddress, PublicResolverABI.abi, signer);
     const price = await edxReg.rentPrice(search, 31536000);
-    setTimeout(() => {
-      console.log("Price:", price.toString());
-    }, 2000);
+    
     const part = (price.toString()).split(",");
     const PRICE = part[0]
 
