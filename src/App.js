@@ -61,7 +61,7 @@ const App = () => {
         setNetwork('EDX testnet');
         setResolverAddress('0x4d09E3dA178aAd688053BcBadfd0477382A75389');
         setedxRegistrarControllerAddress('0x420B76d24cC0099303bC0DE1F4C4B150A18104C2');
-        setGas(16234336);
+        setGas(1000000);
       }
         else if (networkId == 5424) {
           setNetwork('EDX MAINNET');
