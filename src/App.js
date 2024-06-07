@@ -82,7 +82,7 @@ const App = () => {
         const balance = await provider.getBalance(accounts[0]);
         setBalance(ethers.utils.formatEther(balance));
       } catch (error) {
-        console.error('Error fetching data:', error);
+        // console.error('Error fetching data:', error);
       }
     };
     const handleAccountsChanged = (accounts) => {
@@ -255,7 +255,7 @@ const App = () => {
     <div className='board'> 
       {isConnected ? (
         <button className="button2" disabled={true}>
-        <img class="avatar" src={avatar} ></img>
+        <img className="avatar" src={avatar} ></img>
          {isConnected&&ensName&&<p className='name'>{ensName}</p>}{!ensName&&<p className='name'>{walletAddress.slice(0, 6)}..{walletAddress.slice(-4)}</p>}
         </button>
       ) : (
@@ -274,8 +274,8 @@ const App = () => {
       <div className="info">
         <h1>Edexa ENS</h1><br></br>
         
-        {ensName&& <p>Hello <p className="ens-name">{ensName}</p></p>}
-        {!ensName&& isConnected&&<p className='text'>Hello <p className="ens-name">{walletAddress.slice(0, 6)}..{walletAddress.slice(-4)}</p></p>}
+        {ensName&& <h3>Hello <p className="ens-name">{ensName}</p></h3>}
+        {!ensName&& isConnected&&<h3 className='text'>Hello <p className="ens-name">{walletAddress.slice(0, 6)}..{walletAddress.slice(-4)}</p></h3>}
         {!ensName&&isConnected&&<p className='text'>You dont own a ENS. create on here..</p>}
         {!ensName&&!isConnected&&<p className='text'>*connect wallet to use EDX ENS</p>}
       
