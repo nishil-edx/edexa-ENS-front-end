@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import PublicResolverABI from './PublicResolverABI.json';
 import './App.css';
+//import ensRegistry from './ens-registry.json';
 import edxRegistrarControllerABI from './edxRegistrarControllerABI.json';
 import avatar from './avatar.png';
 
@@ -52,8 +53,8 @@ const App = () => {
          
       if (networkId == 1995) {
         setNetwork('EDX testnet');
-        setResolverAddress('0x61c743B3fA8714915fc5687Bb6b4903d11cF2146');
-        setedxRegistrarControllerAddress('0x3FF5908aF09530bdf7E351b461e8888f3875Fb58');
+        setResolverAddress('0x4d09E3dA178aAd688053BcBadfd0477382A75389');
+        setedxRegistrarControllerAddress('0x420B76d24cC0099303bC0DE1F4C4B150A18104C2');
       }
         else if (networkId == 5424) {
           setNetwork('EDX MAINNET');
@@ -70,8 +71,8 @@ const App = () => {
         const reverseName = `${accounts[0].slice(2)}.addr.reverse`;
         const node = ethers.utils.namehash(reverseName);
         const resolverContract_ = new ethers.Contract(resolverAddress, PublicResolverABI.abi, provider);
-        if(isConnected){const ensName_ = await resolverContract_.name(node);
-        setENSName(ensName_);}
+        const ensName_ = await resolverContract_.name(node);
+        setENSName(ensName_);
 
         const balance = await provider.getBalance(accounts[0]);
         setBalance(ethers.utils.formatEther(balance));
@@ -135,25 +136,25 @@ const App = () => {
     const DATA = resolver.interface.encodeFunctionData('setAddr(bytes32,address)', [node,wall]);
 
 
-    // console.log(DATA)
+    console.log(DATA)
 
 
     const tx = await edxReg.makeCommitment(search, walletAddress, 31536000, ethers.utils.formatBytes32String(''), resolverAddress, [DATA], true, 0);
-    // console.log("Commitment byte32:", tx);
+    console.log("Commitment byte32:", tx);
     setdisableCommit(true);
 
     const tx2 = await edxReg.commit(tx);
     setdisableCommit(true);
     await tx2.wait();
-    // console.log("Commit:", tx2);
-    setMessage('Commitment Successful. Please wait 60 seconds for registration.');
+    console.log("Commit:", tx2);
+    setMessage('Commitment Successful. Please wait 10 seconds for registration.');
     
     setTimeout(() => {
       setshowRegister(true);
       setdisableRegister(false);
       setshowCommit(false);
       setMessage('register now...');
-    }, 62000);
+    }, 12000);
 
 
   } catch (error) {
@@ -175,14 +176,14 @@ const App = () => {
   }
 
   const register = async () => {
-    const node = ethers.utils.namehash(search +'.edx');
+    // const node = ethers.utils.namehash(search +'.edx');
     const signer = provider.getSigner();
     const edxReg = new ethers.Contract(edxRegistrarControllerAddress, edxRegistrarControllerABI.abi, signer);
-    const resolver = new ethers.Contract(resolverAddress, PublicResolverABI.abi, signer);
+    // const resolver = new ethers.Contract(resolverAddress, PublicResolverABI.abi, signer);
     const price = await edxReg.rentPrice(search, 31536000);
     setTimeout(() => {
-      // console.log("Price:", price.toString());
-    }, 1000);
+      console.log("Price:", price.toString());
+    }, 2000);
     const part = (price.toString()).split(",");
     const PRICE = part[0]
 
@@ -204,13 +205,22 @@ const App = () => {
     const DATA = resolver.interface.encodeFunctionData('setAddr(bytes32,address)', [node,wall]);
 
 
-    // console.log(DATA)
+    console.log(DATA)
 
 
-      const tx3 = await edxReg.register(search, walletAddress, 31536000, ethers.utils.formatBytes32String(''), resolverAddress, [DATA], true, 0, { value: PRICE, gasLimit: 1000000, gasPrice: 1000000000 });
+      const tx3 = await edxReg.register(search, walletAddress, 31536000, ethers.utils.formatBytes32String(''), resolverAddress, [DATA], true, 0, { value: PRICE});
       setMessage('Registration in progress...');
       setdisableRegister(true);
       await tx3.wait();
+
+      // call to resolver
+
+      //  setTimeout(() => {
+      //   //wait 2 sec
+      // }, 4000);
+
+      // const tx4 = await resolver['setAddr(bytes32,address)'](node, walletAddress.toLowerCase(),{gasLimit: 1000000, gasPrice: 1000000000});
+      // await tx4.wait();
 
      
       setMessage('Registration Successful.. !');
@@ -240,7 +250,7 @@ const App = () => {
     <div className='board'> 
       {isConnected ? (
         <button className="button2" disabled={true}>
-        <img className="avatar" src={avatar} ></img>
+        <img class="avatar" src={avatar} ></img>
          {isConnected&&ensName&&<p className='name'>{ensName}</p>}{!ensName&&<p className='name'>{walletAddress.slice(0, 6)}..{walletAddress.slice(-4)}</p>}
         </button>
       ) : (
@@ -259,8 +269,8 @@ const App = () => {
       <div className="info">
         <h1>Edexa ENS</h1><br></br>
         
-        {ensName&& <h3>Hello <p className="ens-name">{ensName}</p></h3>}
-        {!ensName&& isConnected&&<h3 className='text'>Hello <p className="ens-name">{walletAddress.slice(0, 6)}..{walletAddress.slice(-4)}</p></h3>}
+        {ensName&& <p>Hello <p className="ens-name">{ensName}</p></p>}
+        {!ensName&& isConnected&&<p className='text'>Hello <p className="ens-name">{walletAddress.slice(0, 6)}..{walletAddress.slice(-4)}</p></p>}
         {!ensName&&isConnected&&<p className='text'>You dont own a ENS. create on here..</p>}
         {!ensName&&!isConnected&&<p className='text'>*connect wallet to use EDX ENS</p>}
       
