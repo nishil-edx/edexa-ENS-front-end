@@ -32,6 +32,12 @@ const App = () => {
     }
   };
   
+
+
+
+
+
+  
   useEffect(() => {
     const fetchENSName = async () => {
       try {
@@ -47,13 +53,13 @@ const App = () => {
          
       if (networkId == 1995) {
         setNetwork('EDX testnet');
-        setResolverAddress('0x61c743B3fA8714915fc5687Bb6b4903d11cF2146');
-        setedxRegistrarControllerAddress('0x3FF5908aF09530bdf7E351b461e8888f3875Fb58');
+        setResolverAddress('0x4d09E3dA178aAd688053BcBadfd0477382A75389');
+        setedxRegistrarControllerAddress('0x420B76d24cC0099303bC0DE1F4C4B150A18104C2');
       }
         else if (networkId == 5424) {
           setNetwork('EDX MAINNET');
-          setResolverAddress('0x7Bd7f30Cd71f3A30d6b7df61ce18b22001952a47');
-          setedxRegistrarControllerAddress('0x97Cd4BfBF2d0a6Fd3163cD974ecB6077e4425d0d');
+          setResolverAddress('0x4344E466e3B38EF4f728800dB8524170a05565B7');
+          setedxRegistrarControllerAddress('0xc8CEebF83a7f923d2B1F1e43D04398f2b9056000');
         }else {
           setNetwork('unknown network');
           setMessage('Please connect to edexa testnet or mainnet');
@@ -117,7 +123,23 @@ const App = () => {
 
     const signer = provider.getSigner();
     const edxReg = new ethers.Contract(edxRegistrarControllerAddress, edxRegistrarControllerABI.abi, signer);
-    const tx = await edxReg.makeCommitment(search, walletAddress, 31536000, ethers.utils.formatBytes32String(''), resolverAddress, [], true, 0);
+    const resolverAbi = [
+      "function setAddr(bytes32 node, address a) external",
+      "function setAddr(bytes32 node, uint256 coinType, bytes a) external",
+  ];
+    const resolver = new ethers.Contract(resolverAddress, resolverAbi, signer);
+
+    const wall = await signer.getAddress(); 
+
+    const node = ethers.utils.namehash(`${search}.edx`);
+
+    const DATA = resolver.interface.encodeFunctionData('setAddr(bytes32,address)', [node,wall]);
+
+
+    console.log(DATA)
+
+
+    const tx = await edxReg.makeCommitment(search, walletAddress, 31536000, ethers.utils.formatBytes32String(''), resolverAddress, [DATA], true, 0);
     console.log("Commitment byte32:", tx);
     setdisableCommit(true);
 
@@ -166,22 +188,39 @@ const App = () => {
     const PRICE = part[0]
 
     try {
-      setTimeout(() => {
-        //wait 2 sec
-      },1000);
-      const tx3 = await edxReg.register(search, walletAddress, 31536000, ethers.utils.formatBytes32String(''), resolverAddress, [], true, 0, { value: PRICE, gasLimit: 1000000, gasPrice: 1000000000 });
+    
+     
+    const signer = provider.getSigner();
+    const edxReg = new ethers.Contract(edxRegistrarControllerAddress, edxRegistrarControllerABI.abi, signer);
+    const resolverAbi = [
+      "function setAddr(bytes32 node, address a) external",
+      "function setAddr(bytes32 node, uint256 coinType, bytes a) external",
+  ];
+    const resolver = new ethers.Contract(resolverAddress, resolverAbi, signer);
+
+    const wall = await signer.getAddress(); 
+
+    const node = ethers.utils.namehash(`${search}.edx`);
+
+    const DATA = resolver.interface.encodeFunctionData('setAddr(bytes32,address)', [node,wall]);
+
+
+    console.log(DATA)
+
+
+      const tx3 = await edxReg.register(search, walletAddress, 31536000, ethers.utils.formatBytes32String(''), resolverAddress, [DATA], true, 0, { value: PRICE, gasLimit: 1000000, gasPrice: 1000000000 });
       setMessage('Registration in progress...');
       setdisableRegister(true);
       await tx3.wait();
 
       // call to resolver
 
-       setTimeout(() => {
-        //wait 2 sec
-      }, 4000);
+      //  setTimeout(() => {
+      //   //wait 2 sec
+      // }, 4000);
 
-      const tx4 = await resolver['setAddr(bytes32,address)'](node, walletAddress.toLowerCase(),{gasLimit: 1000000, gasPrice: 1000000000});
-      await tx4.wait();
+      // const tx4 = await resolver['setAddr(bytes32,address)'](node, walletAddress.toLowerCase(),{gasLimit: 1000000, gasPrice: 1000000000});
+      // await tx4.wait();
 
      
       setMessage('Registration Successful.. !');
