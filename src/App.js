@@ -20,6 +20,7 @@ const App = () => {
   const [disableRegister, setdisableRegister] = useState(false);
   const [showRegister, setshowRegister] = useState(false);
   const [showCommit, setshowCommit] = useState(true);
+  const [gas, setGas] = useState(21000);
   
   const [resolverAddress, setResolverAddress]  = useState('');
   const [edxRegistrarControllerAddress, setedxRegistrarControllerAddress] = useState('');
@@ -53,13 +54,13 @@ const App = () => {
          
       if (networkId == 1995) {
         setNetwork('EDX testnet');
-        setResolverAddress('0x4d09E3dA178aAd688053BcBadfd0477382A75389');
-        setedxRegistrarControllerAddress('0x420B76d24cC0099303bC0DE1F4C4B150A18104C2');
+        setResolverAddress('0x61c743B3fA8714915fc5687Bb6b4903d11cF2146');
+        setedxRegistrarControllerAddress('0x3FF5908aF09530bdf7E351b461e8888f3875Fb58');
       }
         else if (networkId == 5424) {
           setNetwork('EDX MAINNET');
-          setResolverAddress('0x4344E466e3B38EF4f728800dB8524170a05565B7');
-          setedxRegistrarControllerAddress('0xc8CEebF83a7f923d2B1F1e43D04398f2b9056000');
+          setResolverAddress('0x7Bd7f30Cd71f3A30d6b7df61ce18b22001952a47');
+          setedxRegistrarControllerAddress('0x97Cd4BfBF2d0a6Fd3163cD974ecB6077e4425d0d');
         }else {
           setNetwork('unknown network');
           setMessage('Please connect to edexa testnet or mainnet');
@@ -77,7 +78,7 @@ const App = () => {
         const balance = await provider.getBalance(accounts[0]);
         setBalance(ethers.utils.formatEther(balance));
       } catch (error) {
-        console.error('Error fetching data:', error);
+        // console.error('Error fetching data:', error);
       }
     };
     const handleAccountsChanged = (accounts) => {
@@ -147,14 +148,14 @@ const App = () => {
     setdisableCommit(true);
     await tx2.wait();
     console.log("Commit:", tx2);
-    setMessage('Commitment Successful. Please wait 60 seconds for registration.');
+    setMessage('Commitment Successful. Please wait 10 seconds for registration.');
     
     setTimeout(() => {
       setshowRegister(true);
       setdisableRegister(false);
       setshowCommit(false);
       setMessage('register now...');
-    }, 62000);
+    }, 11000);
 
 
   } catch (error) {
@@ -250,7 +251,7 @@ const App = () => {
     <div className='board'> 
       {isConnected ? (
         <button className="button2" disabled={true}>
-        <img class="avatar" src={avatar} ></img>
+        <img className="avatar" src={avatar} ></img>
          {isConnected&&ensName&&<p className='name'>{ensName}</p>}{!ensName&&<p className='name'>{walletAddress.slice(0, 6)}..{walletAddress.slice(-4)}</p>}
         </button>
       ) : (
@@ -269,8 +270,8 @@ const App = () => {
       <div className="info">
         <h1>Edexa ENS</h1><br></br>
         
-        {ensName&& <p>Hello <p className="ens-name">{ensName}</p></p>}
-        {!ensName&& isConnected&&<p className='text'>Hello <p className="ens-name">{walletAddress.slice(0, 6)}..{walletAddress.slice(-4)}</p></p>}
+        {ensName&& <h3>Hello <p className="ens-name">{ensName}</p></h3>}
+        {!ensName&& isConnected&&<h3 className='text'>Hello <p className="ens-name">{walletAddress.slice(0, 6)}..{walletAddress.slice(-4)}</p></h3>}
         {!ensName&&isConnected&&<p className='text'>You dont own a ENS. create on here..</p>}
         {!ensName&&!isConnected&&<p className='text'>*connect wallet to use EDX ENS</p>}
       
